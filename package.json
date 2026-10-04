@@ -1,0 +1,25 @@
+{
+  "name": "dataverify",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "node server.cjs"
+  },
+  "devDependencies": {
+    "vite": "^8.3.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.5",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "leaflet": "^1.9.4",
+    "pg": "^8.23.1",
+    "xlsx": "^0.18.5"
+  }
+}

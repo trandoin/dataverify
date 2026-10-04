@@ -1,0 +1,766 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OmniVerify • Multi-Module Data & Telematics Verification Platform</title>
+    <meta name="description" content="Enterprise Data & IoT Telematics Verification Platform for Municipal Waste, Cold Chain, Smart Metering, and Industrial Assets." />
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <!-- SheetJS (XLSX) for Universal Excel & CSV Parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Leaflet CSS for Map Verification -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div id="app" class="platform-layout">
+      <!-- Left-Side Navigation Menu (Clean, No Emojis) -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="brand-logo">
+            <div class="logo-gem">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+              </svg>
+            </div>
+            <div class="brand-info">
+              <span class="brand-name">OmniVerify</span>
+              <span class="brand-tag">AUDIT & SLA ENGINE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tool Navigation Section -->
+        <div class="nav-section-title">AUDIT WORKFLOW</div>
+        <nav class="sidebar-nav">
+          <a href="#audit-view" class="nav-link active" id="navAudit">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <span>Detailed Audit View</span>
+          </a>
+
+          <a href="#fleet-table" class="nav-link" id="navFleet">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="3" y1="9" x2="21" y2="9"></line>
+              <line x1="9" y1="21" x2="9" y2="9"></line>
+            </svg>
+            <span>Fleet / Batch Matrix</span>
+          </a>
+
+          <a href="#import-view" class="nav-link" id="navImport">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span>Import & Verify File</span>
+          </a>
+
+          <a href="#rules-config" class="nav-link" id="navRules">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>Thresholds & Rules</span>
+          </a>
+        </nav>
+
+        <!-- Current Module Context Box -->
+        <div class="sidebar-context-box">
+          <div class="context-label">ACTIVE DOMAIN</div>
+          <div class="context-value" id="sidebarActiveDomain">Waste & Sanitation</div>
+          <div class="context-sub" id="sidebarActiveContext">Ward route & SLA audit</div>
+        </div>
+
+        <!-- Sidebar Footer Status -->
+        <div class="sidebar-footer">
+          <div class="engine-badge">
+            <span class="pulse-dot"></span>
+            <div class="engine-details">
+              <span class="eng-title">Verification Core v3.4</span>
+              <span class="eng-desc">Deterministic GIS + AI</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="main-wrapper">
+        <!-- Top App Bar with Industry Dropdown in Header -->
+        <header class="app-header">
+          <div class="header-left">
+            <!-- 1. INDUSTRY DROPDOWN IN TOP HEADER (No Icons) -->
+            <div class="header-dropdown-container">
+              <span class="header-dropdown-label">Industry:</span>
+              <div class="dropdown-selector header-industry-trigger" id="industryDropdownTrigger">
+                <span class="dropdown-title" id="currentIndustryHeaderTitle">Waste & Sanitation</span>
+                <span class="header-active-pill">Active</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+
+              <!-- Industry Switcher Dropdown Popover (No Icons) -->
+              <div class="dropdown-menu-popover industry-popover" id="industryDropdownMenu">
+                <div class="popover-heading">SELECT INDUSTRY MODULE</div>
+                
+                <div class="popover-item active" data-module="waste">
+                  <div class="item-title-row">
+                    <span class="unit-code">Waste & Sanitation</span>
+                    <span class="badge-tag live">Active — Vehicle 05 loaded</span>
+                  </div>
+                  <div class="unit-meta">Ward route, D2D street coverage & SLA audit</div>
+                </div>
+
+                <div class="popover-item" data-module="coldchain">
+                  <div class="item-title-row">
+                    <span class="unit-code">Cold Chain Logistics</span>
+                  </div>
+                  <div class="unit-meta">Pharma temperature excursions & unauthorized door opens</div>
+                </div>
+
+                <div class="popover-item" data-module="smartmeter">
+                  <div class="item-title-row">
+                    <span class="unit-code">Smart Utilities</span>
+                  </div>
+                  <div class="unit-meta">Power & water reverse flow / tamper detection</div>
+                </div>
+
+                <div class="popover-item" data-module="heavyequip">
+                  <div class="item-title-row">
+                    <span class="unit-code">Heavy Machinery</span>
+                  </div>
+                  <div class="unit-meta">Site geofence & hydraulic PTO vs engine idle</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="header-divider"></div>
+
+            <!-- 2. UNIT / VEHICLE SELECTOR DROPDOWN -->
+            <div class="header-dropdown-container">
+              <div class="dropdown-selector" id="vehicleDropdownTrigger">
+                <span class="dropdown-title" id="currentReportHeaderTitle">Vehicle 05 – Waste Fleet Audit Dashboard</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+
+              <div class="dropdown-menu-popover" id="vehicleDropdownMenu">
+                <div class="popover-heading">SELECT UNIT / BATCH</div>
+                <div class="popover-item active" data-v="v05">
+                  <div class="unit-code">VEHICLE 05</div>
+                  <div class="unit-meta">Bari Sadri · 3,297 pings · 8 Fails</div>
+                </div>
+                <div class="popover-item" data-v="v08">
+                  <div class="unit-code">VEHICLE 08</div>
+                  <div class="unit-meta">Bari Sadri · 2,840 pings · 2 Fails</div>
+                </div>
+                <div class="popover-item" data-v="v12">
+                  <div class="unit-code">VEHICLE 12</div>
+                  <div class="unit-meta">Zone B · 4,110 pings · Pass</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="header-right">
+            <!-- User Profile / Logout Dropdown -->
+            <div class="user-profile-widget" id="userProfileWidget">
+              <div class="user-avatar-badge" id="userAvatarBadge">AO</div>
+              <span class="user-name-text" id="headerUserName">Chief Audit Officer</span>
+              <button class="sign-out-btn" id="btnSignOut" title="Sign Out">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+              </button>
+            </div>
+
+            <button class="header-btn" id="btnAiSummary" title="Explain with Forensic AI">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <span>AI Memo</span>
+            </button>
+
+            <button class="header-btn" id="btnToggleMap" title="Toggle Route Map">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                <line x1="8" y1="2" x2="8" y2="18"></line>
+                <line x1="16" y1="6" x2="16" y2="22"></line>
+              </svg>
+              <span>Route Map</span>
+            </button>
+
+            <button class="header-btn export-btn" id="btnExport">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Export</span>
+            </button>
+
+            <button class="header-btn danger-btn" id="btnDeleteCurrentReport" title="Delete Active Vehicle Audit Report">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+              <span>Delete Report</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- VIEW 1: DETAILED VEHICLE AUDIT -->
+        <div class="view-container active" id="viewAudit">
+          <!-- Report Header Info Banner -->
+          <div class="report-meta-bar">
+            <div class="meta-titles">
+              <h1 class="page-title" id="auditTitle">Vehicle 05 • Waste Fleet Audit</h1>
+              <p class="page-subtitle" id="auditSubtitle">GPS report 01–31 Aug 2026 · Bari Sadri · 3,297 pings</p>
+            </div>
+            <div class="meta-badge" id="auditEngineTag">Rule engine: 6 pillars, 30+ checks</div>
+          </div>
+
+          <!-- Top 6 KPI Metric Cards -->
+          <section class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-value" id="kpiDist">38.7 km</div>
+              <div class="kpi-label">Distance logged</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-value" id="kpiDays">31</div>
+              <div class="kpi-label">Days reviewed</div>
+            </div>
+
+            <div class="kpi-card fail-accent">
+              <div class="kpi-value fail-text" id="kpiFail">8</div>
+              <div class="kpi-label">Failed checks</div>
+            </div>
+
+            <div class="kpi-card flag-accent">
+              <div class="kpi-value flag-text" id="kpiFlag">4</div>
+              <div class="kpi-label">Flagged for review</div>
+            </div>
+
+            <div class="kpi-card fail-accent">
+              <div class="kpi-value fail-text" id="kpiLate">72%</div>
+              <div class="kpi-label">Pings over 30 min late</div>
+            </div>
+
+            <div class="kpi-card flag-accent">
+              <div class="kpi-value flag-text" id="kpiStops">11.3</div>
+              <div class="kpi-label">Stops per km <span class="sub-target">(target 12+)</span></div>
+            </div>
+          </section>
+
+          <!-- Middle Row: Donut Chart & Daily Metric Bar Chart -->
+          <section class="charts-grid">
+            <!-- Left: Rule Results Donut Chart Card -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3 class="card-heading">Rule results</h3>
+                  <p class="card-caption">How the 17 audit checks came out</p>
+                </div>
+              </div>
+              <div class="donut-content-layout">
+                <div class="donut-chart-container">
+                  <svg id="donutSvg" viewBox="0 0 200 200" width="180" height="180">
+                    <!-- Dynamic Donut Segments -->
+                  </svg>
+                  <div class="donut-center-label">
+                    <span class="donut-center-number" id="donutTotalCount">17</span>
+                    <span class="donut-center-text">checks</span>
+                  </div>
+                </div>
+                <div class="donut-legend">
+                  <div class="legend-row">
+                    <span class="legend-square pass-square"></span>
+                    <span class="legend-label">Pass: <strong id="legPassCount">2</strong></span>
+                  </div>
+                  <div class="legend-row">
+                    <span class="legend-square flag-square"></span>
+                    <span class="legend-label">Flag: <strong id="legFlagCount">4</strong></span>
+                  </div>
+                  <div class="legend-row">
+                    <span class="legend-square fail-square"></span>
+                    <span class="legend-label">Fail: <strong id="legFailCount">8</strong></span>
+                  </div>
+                  <div class="legend-row">
+                    <span class="legend-square testable-square"></span>
+                    <span class="legend-label">Not testable: <strong id="legNotCount">3</strong></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Daily Metric Bar Chart Card -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3 class="card-heading">Daily metric</h3>
+                  <p class="card-caption" id="dailyMetricCaption">Kilometres driven per day (38.7 km total).</p>
+                </div>
+                <!-- Segmented Toggle Tabs -->
+                <div class="segmented-control" id="metricTabs">
+                  <button class="seg-btn" data-metric="stops">Stops per km</button>
+                  <button class="seg-btn" data-metric="late">Late packets</button>
+                  <button class="seg-btn active" data-metric="distance">Distance</button>
+                </div>
+              </div>
+              <div class="bar-chart-wrapper">
+                <div class="y-axis-labels" id="yAxisLabels">
+                  <span>2.7</span>
+                  <span>2</span>
+                  <span>1.4</span>
+                  <span>0.7</span>
+                  <span>0</span>
+                </div>
+                <div class="bars-container" id="barsContainer">
+                  <!-- 31 vertical bars generated by JS -->
+                </div>
+              </div>
+              <div class="bar-chart-footer">
+                <div class="x-axis-ticks">
+                  <span>1</span>
+                  <span>6</span>
+                  <span>11</span>
+                  <span>16</span>
+                  <span>21</span>
+                  <span>26</span>
+                  <span>31</span>
+                </div>
+                <div class="chart-active-tooltip" id="barHoverTooltip">11 Aug 2026: 1.82 km</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Interactive Route Map with Street & Satellite Switchers -->
+          <section class="map-section" id="mapSection">
+            <div class="section-top-bar">
+              <div>
+                <h3 class="card-heading" id="mapHeadingTitle">Route Corridor & Path Deviation Analysis</h3>
+                <p class="card-caption" id="mapHeadingSubtitle">Designated Municipal Collection Corridor vs. Actual Driven Telematics · Bari Sadri, Rajasthan</p>
+              </div>
+              <div class="map-controls">
+                <!-- Base Layer Switcher: Strictly Street & Satellite as requested -->
+                <div class="segmented-control" id="mapLayerSwitcher" style="margin-right: 8px;">
+                  <button class="seg-btn active" data-layer="street" id="btnLayerStreet" title="OpenStreetMap Vector & Street Detail">Street View</button>
+                  <button class="seg-btn" data-layer="satellite" id="btnLayerSatellite" title="High-Resolution Satellite Imagery with Street Labels">Satellite View</button>
+                </div>
+
+                <!-- Point & Deviation Filter Switchers -->
+                <button class="filter-pill active" id="btnMapAllPoints">All Pings</button>
+                <button class="filter-pill" id="btnMapIdlePoints">Stops Only (Speed = 0)</button>
+                <button class="filter-pill" id="btnMapFastPoints">Speed Violations (> 18 km/h)</button>
+                <button class="filter-pill active highlight-deviation" id="btnMapDeviation" title="Toggle Planned vs Actual Route Corridor Deviation">Corridor Deviation</button>
+                <button class="filter-pill" id="btnToggleMapHeight" title="Toggle taller map view" style="margin-left: 6px; border-color: #38bdf8; color: #38bdf8;">↕ Expand Map</button>
+              </div>
+            </div>
+
+            <!-- Daywise Telemetry Selector & Live Route Stats Toolbar -->
+            <div class="map-day-toolbar">
+              <div class="day-selector-group">
+                <span class="toolbar-label">DAY SELECTION:</span>
+                <button class="day-nav-btn" id="btnPrevDay" title="Previous Day">◀</button>
+                <select class="day-dropdown" id="mapDaySelect" title="Select specific day of the month">
+                  <option value="all">All 31 Days (Full Month Corridor)</option>
+                </select>
+                <button class="day-nav-btn" id="btnNextDay" title="Next Day">▶</button>
+              </div>
+
+              <div class="map-quick-stats" id="mapQuickStats">
+                <div class="quick-stat-chip">
+                  <span class="chip-dot" style="background: #10b981;"></span>
+                  <span class="chip-label">Path Adherence:</span>
+                  <strong id="mapStatAdherence">--%</strong>
+                </div>
+                <div class="quick-stat-chip">
+                  <span class="chip-dot" style="background: #38bdf8;"></span>
+                  <span class="chip-label">Filtered Dist:</span>
+                  <strong id="mapStatDistance">-- km</strong>
+                </div>
+                <div class="quick-stat-chip">
+                  <span class="chip-dot" style="background: #f59e0b;"></span>
+                  <span class="chip-label">Stops:</span>
+                  <strong id="mapStatStops">--</strong>
+                </div>
+                <div class="quick-stat-chip">
+                  <span class="chip-dot" style="background: #ef4444;"></span>
+                  <span class="chip-label">Off-Route Detours:</span>
+                  <strong id="mapStatDeviations">--</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Map Container with Floating Telemetry HUD -->
+            <div class="map-canvas-container" id="mapCanvas">
+              <div class="map-floating-hud" id="mapFloatingHud">
+                <div class="hud-header">
+                  <div class="hud-unit" id="hudUnitCode">VEHICLE 01</div>
+                  <div class="hud-status-badge pass" id="hudStatusBadge">94% Compliant</div>
+                </div>
+                <div class="hud-body">
+                  <div class="hud-row"><span class="hud-label">Ward Corridor:</span> <span class="hud-val" id="hudWardName">Ward 12 (Bari Sadri)</span></div>
+                  <div class="hud-row"><span class="hud-label">Route Filter:</span> <span class="hud-val" id="hudActiveFilter">All 31 Days</span></div>
+                  <div class="hud-row"><span class="hud-label">Planned Path:</span> <span class="hud-val" style="color: #10b981;">● Designated Corridor</span></div>
+                  <div class="hud-row"><span class="hud-label">Actual Path:</span> <span class="hud-val" style="color: #38bdf8;">● Driven GPS Breadcrumbs</span></div>
+                  <div class="hud-row"><span class="hud-label">Corridor Excursions:</span> <span class="hud-val" style="color: #ef4444;" id="hudExcursions">1 detour flagged</span></div>
+                </div>
+                <div class="hud-footer">
+                  <button class="hud-btn" id="btnResetMapView">Reset View</button>
+                  <button class="hud-btn" id="btnTogglePlannedPath">Toggle Planned</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Rule Checks Table Section -->
+          <section class="table-section">
+            <div class="table-header-block">
+              <div>
+                <h3 class="card-heading">Rule checks</h3>
+                <p class="card-caption">Filter by status</p>
+              </div>
+              <div class="filter-pills-row" id="ruleFilters">
+                <button class="filter-pill active" data-filter="all">All (17)</button>
+                <button class="filter-pill" data-filter="Fail">Fail (8)</button>
+                <button class="filter-pill" data-filter="Flag">Flag (4)</button>
+                <button class="filter-pill" data-filter="Pass">Pass (2)</button>
+                <button class="filter-pill" data-filter="Not testable">Not testable (3)</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="audit-table">
+                <thead>
+                  <tr>
+                    <th style="width: 140px;">Rule</th>
+                    <th style="width: 220px;">Check</th>
+                    <th>Finding</th>
+                    <th style="width: 120px; text-align: right;">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="ruleTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Data Needed to Finish Audit Block -->
+          <section class="missing-data-card">
+            <div class="missing-header">
+              <h3 class="missing-title">Data needed to finish the audit</h3>
+              <p class="missing-desc">These inputs are not in the GPS export, so 7 rule groups can't be tested yet.</p>
+            </div>
+            <div class="missing-grid">
+              <div class="missing-row">
+                <div class="input-name">Ward polygon and street centerlines</div>
+                <div class="rule-refs">WM-COV-01/04/05, WM-GEO-01..04</div>
+              </div>
+              <div class="missing-row">
+                <div class="input-name">Landfill, MRF and depot coordinates; weighbridge logs</div>
+                <div class="rule-refs">WM-DISP-01..04</div>
+              </div>
+              <div class="missing-row">
+                <div class="input-name">Bin locations, PTO sensor and RFID scans</div>
+                <div class="rule-refs">WM-BIN-01..04</div>
+              </div>
+              <div class="missing-row">
+                <div class="input-name">Shift window and daily rate</div>
+                <div class="rule-refs">WM-BILL-01/02</div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- VIEW 2: FLEET / BATCH OVERVIEW TABLE -->
+        <div class="view-container" id="viewFleet">
+          <div class="view-header">
+            <div>
+              <h1 class="page-title">Fleet & Batch Verification Matrix</h1>
+              <p class="page-subtitle">Multi-vehicle audit summary across Bari Sadri Municipality · August 2026</p>
+            </div>
+            <button class="primary-action-btn" id="btnUploadBatch">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Add Vehicle File</span>
+            </button>
+          </div>
+
+          <div class="table-responsive card-surface">
+            <table class="audit-table fleet-table">
+              <thead>
+                <tr>
+                  <th>Vehicle ID</th>
+                  <th>Assigned Ward</th>
+                  <th>Report Period</th>
+                  <th>Total Pings</th>
+                  <th>Logged Dist</th>
+                  <th>Compliance Score</th>
+                  <th>Checks Status</th>
+                  <th>Penalty Est.</th>
+                  <th style="text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="fleetTableBody">
+                <!-- Injected by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- VIEW 3: IMPORT & VERIFY NEW FILE -->
+        <div class="view-container" id="viewImport">
+          <div class="view-header">
+            <div>
+              <h1 class="page-title">Universal Telematics Ingestion & Schema Mapper</h1>
+              <p class="page-subtitle">Drop raw Excel or CSV files from any GPS tracker (Teltonika, Concox, Queclink, or custom exports)</p>
+            </div>
+          </div>
+
+          <div class="import-layout">
+            <div class="dropzone-box" id="dropzone">
+              <input type="file" id="fileInput" accept=".xlsx, .xls, .csv" style="display: none;" />
+              <div class="drop-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+              </div>
+              <h3 class="drop-title">Drag & drop GPS Telemetry file here</h3>
+              <p class="drop-sub">Supports .xlsx (like VEHCLE 05.xlsx), .xls, or .csv up to 250 MB</p>
+              <div class="drop-actions">
+                <button class="secondary-btn" id="btnBrowseFiles">Browse Local Files</button>
+                <button class="sample-btn" id="btnLoadSampleV05">Load Sample: VEHCLE 05.xlsx</button>
+              </div>
+            </div>
+
+            <!-- Ingestion Diagnostics Card -->
+            <div class="card-surface parsing-card" id="parsingCard">
+              <h3 class="card-heading">Automated Schema Detective</h3>
+              <p class="card-caption">Zero-setup normalization engine</p>
+              <div class="schema-checklist" id="schemaChecklist">
+                <div class="schema-item">
+                  <span class="icon-ok">✓</span>
+                  <span>Vehicle Identifier: <strong>Auto-inferred from filename/header</strong></span>
+                </div>
+                <div class="schema-item">
+                  <span class="icon-ok">✓</span>
+                  <span>Coordinates: <strong>Composite Lat-Lng parser detected</strong></span>
+                </div>
+                <div class="schema-item">
+                  <span class="icon-ok">✓</span>
+                  <span>Date/Time Format: <strong>Excel Float Serial (1900 Epoch) Normalizer active</strong></span>
+                </div>
+                <div class="schema-item">
+                  <span class="icon-ok">✓</span>
+                  <span>Latency Calculator: <strong>Packet Time vs Received Time delta active</strong></span>
+                </div>
+              </div>
+              <div class="import-status-text" id="importStatusText">Ready for file ingestion.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW 4: THRESHOLDS & RULES CONFIGURATION -->
+        <div class="view-container" id="viewRules">
+          <div class="view-header">
+            <div>
+              <h1 class="page-title">Rule Engine & SLA Penalty Configurator</h1>
+              <p class="page-subtitle">Configure thresholds for the active module: <span id="configModuleName">Waste & Sanitation</span></p>
+            </div>
+            <button class="secondary-btn" id="btnResetRules">Reset to Standard Municipal SLA</button>
+          </div>
+
+          <div class="rules-config-grid" id="rulesConfigContainer">
+            <!-- Dynamic sliders injected by JS -->
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- AI Forensic Audit Modal -->
+    <div class="modal-overlay" id="aiModal">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <span class="ai-badge">FORENSIC AUDIT MEMO</span>
+            <h2 class="modal-title">Vehicle 05 • Non-Compliance Executive Summary</h2>
+          </div>
+          <button class="close-modal-btn" id="btnCloseModal">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="memo-callout caution">
+            <strong>Audit Verdict: HIGH RISK / CONDITIONAL PENALTY</strong>
+            <p>Significant telematics latency anomalies and irregular collection patterns detected across 31 operating days.</p>
+          </div>
+
+          <h4 class="memo-subheading">1. Severe Data Transmission Delay (WM-TAM-02)</h4>
+          <p>Over <strong>72% of all GPS records</strong> were received at the central server with a delay exceeding 30 minutes. Furthermore, 1,416 pings arrived with server timestamps preceding device timestamps, indicating batch-dump buffer manipulation or misconfigured hardware RTC clocks.</p>
+
+          <h4 class="memo-subheading">2. Missing Street Coverage & Low Stop Density (WM-COV-03)</h4>
+          <p>The vehicle registered an average of only <strong>11.3 stops per kilometer</strong> (below the municipal minimum SLA of 12 stops/km). On August 18th, zero legitimate door-to-door collection stops were detected despite 1.4 km of travel.</p>
+
+          <h4 class="memo-subheading">3. Recommended Billing Action</h4>
+          <p>Recommend withholding ₹14,200 ($170) from the monthly contractor invoice under Clause 14.2 (Telematics Blackouts and Sub-Target Ward Coverage) pending contractor dispute explanation.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="secondary-btn" id="btnCopyMemo">Copy Formal Memo</button>
+          <button class="primary-action-btn" id="btnPrintMemo">Print Legal Certificate</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. Real Database Diagnostics Modal -->
+    <div class="modal-overlay" id="dbModal">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <span class="ai-badge" style="color: #2ecc71; background: rgba(46, 204, 113, 0.15);">POSTGRESQL 17.2 HEALTH</span>
+            <h2 class="modal-title">Live Database Verification Check</h2>
+          </div>
+          <button class="close-modal-btn" id="btnCloseDbModal">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="db-stats-grid">
+            <div class="db-stat-box">
+              <span class="stat-label">HOST & PORT</span>
+              <span class="stat-val">localhost:5433</span>
+            </div>
+            <div class="db-stat-box">
+              <span class="stat-label">DATABASE</span>
+              <span class="stat-val">omniverify</span>
+            </div>
+            <div class="db-stat-box">
+              <span class="stat-label">ENGINE</span>
+              <span class="stat-val">PostgreSQL 17.2</span>
+            </div>
+            <div class="db-stat-box">
+              <span class="stat-label">QUERY LATENCY</span>
+              <span class="stat-val" id="dbModalLatency" style="color: #2ecc71;">-- ms</span>
+            </div>
+            <div class="db-stat-box">
+              <span class="stat-label">TELEMETRY PINGS IN DB</span>
+              <span class="stat-val" id="dbModalPingsCount" style="color: #38bdf8;">-- rows</span>
+            </div>
+            <div class="db-stat-box">
+              <span class="stat-label">REGISTERED USERS</span>
+              <span class="stat-val" id="dbModalUsersCount">--</span>
+            </div>
+          </div>
+
+          <h4 class="memo-subheading" style="margin-top: 18px;">Active Verified Tables in omniverify</h4>
+          <div class="schema-checklist" style="margin-top: 8px;">
+            <div class="schema-item"><span class="icon-ok">✓</span> <span><strong>telemetry_pings:</strong> Live GPS coordinates, speed, and addresses</span></div>
+            <div class="schema-item"><span class="icon-ok">✓</span> <span><strong>daily_audit_reports:</strong> Vehicle 05 audit results (38.7 km, 8 fails)</span></div>
+            <div class="schema-item"><span class="icon-ok">✓</span> <span><strong>audit_rule_checks:</strong> 17 granular compliance rules</span></div>
+            <div class="schema-item"><span class="icon-ok">✓</span> <span><strong>users:</strong> Bcrypt password security & JWT authentication</span></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="secondary-btn" id="btnTestDbPing">Run Live Ping Test</button>
+          <button class="primary-action-btn" id="btnCloseDbModal2">Close Check</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Audit Report Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal" style="display: none;">
+      <div class="modal-box" style="max-width: 460px;">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <span class="ai-badge" style="color: #ef4444; background: rgba(239, 68, 68, 0.15);">CONFIRM PERMANENT DELETION</span>
+            <h2 class="modal-title" style="color: #f87171;">Delete Audit Report</h2>
+          </div>
+          <button class="close-modal-btn" id="btnCloseDeleteModal">×</button>
+        </div>
+        <div class="modal-body">
+          <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 12px;">
+            Are you sure you want to permanently delete the audit report and all associated GPS telematics for <strong id="deleteTargetVehicle" style="color: #f87171;">VEHICLE</strong>?
+          </p>
+          <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 6px; padding: 12px; font-size: 12px; color: #fca5a5;">
+            ⚠️ This will remove the audit report record, SLA penalty calculations, rule checks, and all GPS breadcrumb telemetry from the PostgreSQL database. This action cannot be undone.
+          </div>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button class="secondary-btn" id="btnCancelDelete">Cancel</button>
+          <button class="primary-action-btn" id="btnConfirmDelete" style="background: #dc2626; border-color: #ef4444; color: #fff;">Permanently Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FULL-PAGE AUTHENTICATION SCREEN (Shown before dashboard) -->
+    <div class="login-gate-screen" id="loginGatePage">
+      <div class="login-card-container">
+        <div class="login-brand-header">
+          <div class="logo-gem" style="width: 44px; height: 44px; margin: 0 auto 12px;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+          </div>
+          <h2 class="login-main-title">OmniVerify</h2>
+          <span class="brand-tag" style="letter-spacing: 1.5px; font-size: 11px;">ENTERPRISE TELEMATICS & SLA AUDIT</span>
+          <p class="login-main-sub">Municipal Solid Waste & Asset Data Verification Platform</p>
+        </div>
+
+        <form class="login-form-box" id="loginForm">
+          <div class="auth-field">
+            <label class="field-label">Officer Email</label>
+            <input type="email" id="authEmail" class="text-input" placeholder="admin@omniverify.gov" value="admin@omniverify.gov" required />
+          </div>
+
+          <div class="auth-field">
+            <label class="field-label">Password</label>
+            <input type="password" id="authPassword" class="text-input" placeholder="••••••••••••" value="password123" required />
+          </div>
+
+          <div id="authAlert" class="auth-alert-box" style="display: none;"></div>
+
+          <button type="submit" class="primary-action-btn submit-login-btn" id="btnSubmitAuth">
+            Sign In to Audit Workspace
+          </button>
+
+          <button type="button" class="secondary-btn demo-fill-btn" id="btnQuickDemoFill">
+            1-Click Demo Login (Chief Audit Officer)
+          </button>
+        </form>
+
+        <div class="login-footer-security">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span>End-to-End Encrypted · Role-Based Access Control</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

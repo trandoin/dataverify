@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: omniverify-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: omniverify
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d omniverify"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: omniverify-app
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 4000
+      DATABASE_URL: postgres://postgres:root@db:5432/omniverify
+      JWT_SECRET: omniverify_super_secret_jwt_key_2026
+    ports:
+      - "4000:4000"
+
+volumes:
+  pgdata:
