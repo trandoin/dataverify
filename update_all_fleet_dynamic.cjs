@@ -297,6 +297,86 @@ async function updateFleet() {
     }
   ];
 
+  console.log('Ensuring database schema exists...');
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      email VARCHAR(255) UNIQUE NOT NULL,
+      password_hash VARCHAR(255) NOT NULL,
+      full_name VARCHAR(100) NOT NULL,
+      role VARCHAR(50) DEFAULT 'auditor',
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS monitored_assets (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      asset_code VARCHAR(100) NOT NULL UNIQUE,
+      assigned_ward VARCHAR(100) NOT NULL,
+      is_active BOOLEAN DEFAULT TRUE
+    );
+
+    CREATE TABLE IF NOT EXISTS daily_audit_reports (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      asset_code VARCHAR(100) NOT NULL UNIQUE,
+      report_title VARCHAR(255) NOT NULL,
+      period VARCHAR(100) NOT NULL,
+      distance_km NUMERIC(8, 2),
+      days_reviewed INT DEFAULT 31,
+      failed_checks INT DEFAULT 0,
+      flagged_checks INT DEFAULT 0,
+      pass_checks INT DEFAULT 0,
+      late_pings_pct VARCHAR(20),
+      stops_per_km VARCHAR(20),
+      penalty_inr NUMERIC(10, 2) DEFAULT 0,
+      total_pings INT DEFAULT 0,
+      compliance_score VARCHAR(10),
+      status VARCHAR(20),
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS audit_rule_checks (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      asset_code VARCHAR(100) NOT NULL,
+      rule_code VARCHAR(50) NOT NULL,
+      check_name VARCHAR(255) NOT NULL,
+      finding TEXT NOT NULL,
+      status VARCHAR(50) NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS telemetry_pings (
+      id BIGSERIAL PRIMARY KEY,
+      asset_code VARCHAR(100) NOT NULL,
+      lat NUMERIC(10, 6) NOT NULL,
+      lng NUMERIC(10, 6) NOT NULL,
+      speed NUMERIC(5, 2) DEFAULT 0,
+      status VARCHAR(50),
+      address TEXT,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS ward_boundaries (
+      id SERIAL PRIMARY KEY,
+      ward_name VARCHAR(100) NOT NULL,
+      geom_json TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS industry_modules (
+      id SERIAL PRIMARY KEY,
+      module_key VARCHAR(50) UNIQUE NOT NULL,
+      name VARCHAR(100) NOT NULL,
+      description TEXT,
+      sort_order INT DEFAULT 1
+    );
+  `);
+
+  const bcrypt = require('bcryptjs');
+  const hashed = await bcrypt.hash('password123', 10);
+  await client.query(`
+    INSERT INTO users (email, password_hash, full_name, role)
+    VALUES ('admin@omniverify.gov', $1, 'Chief Audit Officer', 'admin')
+    ON CONFLICT (email) DO UPDATE SET password_hash = $1
+  `, [hashed]);
+
   for (const v of vehicles) {
     // 1. Monitored Assets
     await client.query(`
