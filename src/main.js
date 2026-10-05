@@ -416,25 +416,31 @@ function loadVehicleData(data) {
 }
 
 function setupAuditDashboard() {
-  const tabs = el.metricTabs.querySelectorAll('.metric-tab');
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      state.currentMetric = tab.dataset.metric;
-      renderBarChart(state.currentMetric);
+  if (el.metricTabs) {
+    const tabs = el.metricTabs.querySelectorAll('.seg-btn, .metric-tab, button');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        e.preventDefault();
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        state.currentMetric = tab.dataset.metric;
+        renderBarChart(state.currentMetric);
+      });
     });
-  });
+  }
 
-  const rulePills = el.ruleFilters.querySelectorAll('.filter-pill');
-  rulePills.forEach(pill => {
-    pill.addEventListener('click', () => {
-      rulePills.forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      state.currentRuleFilter = pill.dataset.filter;
-      renderRuleChecksTable(state.currentRuleFilter);
+  if (el.ruleFilters) {
+    const rulePills = el.ruleFilters.querySelectorAll('.filter-pill, button');
+    rulePills.forEach(pill => {
+      pill.addEventListener('click', (e) => {
+        e.preventDefault();
+        rulePills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        state.currentRuleFilter = pill.dataset.filter;
+        renderRuleChecksTable(state.currentRuleFilter);
+      });
     });
-  });
+  }
 }
 
 // 4. Donut Chart SVG Renderer
